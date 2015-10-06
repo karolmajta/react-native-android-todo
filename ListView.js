@@ -16,7 +16,7 @@ var ListView = React.createClass({
     return (
       <ScrollView style={{flex: 1}}
         onScroll={() => { console.log('onScroll!'); }}>
-        {this.renderTodos()}
+        {this.props.todos === null ? undefined : this.renderTodos()}
       </ScrollView>
     );
   },
