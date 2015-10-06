@@ -1,7 +1,3 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- */
 'use strict';
 
 var React = require('react-native');
@@ -11,7 +7,11 @@ var {
   Text,
   ToolbarAndroid,
   View,
+  Navigator
 } = React;
+
+var CreateView = require('./CreateView');
+var ListView = require('./ListView');
 
 
 var toolbarActions = [
@@ -21,10 +21,22 @@ var toolbarActions = [
 
 var TodoApp = React.createClass({
   getInitialState: function () {
-      return {screen: 'browse'}
+      return {
+        currentToolbarAction: toolbarActions[0],
+        todos: [
+          'Learn react native',
+          'Feed ducks',
+          'Become a lisper',
+          'Learn react native',
+          'Feed ducks',
+          'Become a lisper'
+        ]
+      }
   },
 
   render: function () {
+    var subView;
+
     return (
       <View style={styles.screen}>
         <ToolbarAndroid
@@ -32,18 +44,39 @@ var TodoApp = React.createClass({
             onActionSelected={this.onActionSelected}
             style={styles.toolbar}
             title="My Todos"
-            subtitle={this.state.screen} />
-        <View style={styles.content}>
-          <Text>
-            Hello, you are on screen: {this.state.screen}
-          </Text>
-        </View>
+            subtitle={this.state.currentToolbarAction.screen} />
+        {this.renderScreen()}
       </View>
     );
   },
 
+  renderScreen: function () {
+    if (this.state.currentToolbarAction.screen == 'browse') {
+      return <ListView todos={this.state.todos} onRemove={this.removeTodo} />
+    } else {
+      return <CreateView onCreate={this.addTodo} />
+    }
+  },
+
+  addTodo: function (text) {
+    this.setState({
+      todos: [text].concat(this.state.todos),
+      currentToolbarAction: toolbarActions[0]
+    });
+  },
+
+
+  removeTodo: function (idx) {
+    console.log('remove todo called...');
+    var left = this.state.todos.slice(0, idx);
+    var right = this.state.todos.slice(idx+1, this.state.todos.length);
+    this.setState({
+      todos: left.concat(right)
+    })
+  },
+
   onActionSelected: function (idx) {
-    this.setState({screen: toolbarActions[idx].screen})
+    this.setState({currentToolbarAction: toolbarActions[idx]})
   }
 });
 
